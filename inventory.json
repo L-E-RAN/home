@@ -1,0 +1,32 @@
+{
+    "products": [
+        {
+            "id": "broom",
+            "name": "המטאטא החדשני",
+            "price": 59.99,
+            "image": "broom.jpg",
+            "stock": 2
+        },
+        {
+            "id": "iphone15pro",
+            "name": "אייפון 15 פרו",
+            "price": 899.00,
+            "image": "iphone15pro.jpg",
+            "stock": 2
+        },
+        {
+            "id": "airpods",
+            "name": "איירפודס",
+            "price": 249.00,
+            "image": "airpods_latest.jpg",
+            "stock": 2
+        },
+        {
+            "id": "applewatch",
+            "name": "אפל ווטש",
+            "price": 389.00,
+            "image": "apple_watch_latest.jpg",
+            "stock": 2
+        }
+    ]
+}
