@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
     let lastAddedTime = null;
 
-    // Update cart quantity and save cart to the server
+    // פונקציה שמעדכנת את חיווי הכמות בסל ושומרת את העגלה בשרת
     function updateCartQuantity() {
         const cartQuantityElement = document.getElementById('cart-quantity');
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
         cartQuantityElement.textContent = totalQuantity;
 
-        // שמירת העגלה בשרת
+        // שליחה לשרת לעדכון עגלה
         fetch('save_cart.php', {
             method: 'POST',
             headers: {
@@ -27,34 +27,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateCartQuantity();
 
-    // Fetch inventory data and update based on all carts
+    // משיכת נתוני מלאי
     fetch('inventory.json')
         .then(response => response.json())
         .then(data => {
             const products = data.products;
 
-            // Fetch all carts from the server to calculate total stock
-            fetch('get_all_carts.php') // קובץ זה יחזיר את כל העגלות
-                .then(response => response.json())
-                .then(cartsData => {
-                    products.forEach(product => {
-                        let totalInCarts = 0;
+            // פונקציה לטיפול בהוספת מוצר לעגלה
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.getAttribute('data-product-id');
+                    const product = products.find(p => p.id === productId);
 
-                        // לחשב כמה מהמוצרים בעגלות
-                        cartsData.forEach(cart => {
-                            const itemInCart = cart.find(item => item.id === product.id);
-                            if (itemInCart) {
-                                totalInCarts += itemInCart.quantity;
-                            }
-                        });
+                    if (product && product.stock > 0) {
+                        const existingProduct = cart.find(item => item.name === product.name);
+                        if (existingProduct) {
+                            existingProduct.quantity += 1;
+                        } else {
+                            cart.push({
+                                id: product.id,
+                                name: product.name,
+                                price: product.price,
+                                image: product.image,
+                                quantity: 1
+                            });
+                        }
 
-                        // לעדכן את המלאי בהתאם לכמות הכוללת בעגלות
-                        const stockAvailable = product.stock - totalInCarts;
-                        const stockButton = document.querySelector(`.stock-button[data-product-id="${product.id}"]`);
+                        product.stock -= 1;
+                        sessionStorage.setItem('cart', JSON.stringify(cart));
+                        lastAddedTime = Date.now();
+
+                        // הצגת Toast
+                        showToast(`${product.name} נוסף לסל הקניות.`);
+
+                        // עדכון חיווי הכמות בסל
+                        updateCartQuantity();
+
+                        // עדכון מלאי בכפתור
+                        const stockButton = document.querySelector(`.stock-button[data-product-id="${productId}"]`);
                         if (stockButton) {
+                            const stockAvailable = product.stock;
                             stockButton.textContent = `כמות במלאי: ${stockAvailable}`;
 
-                            // Update button color based on stock
                             if (stockAvailable > 1) {
                                 stockButton.style.backgroundColor = 'green';
                                 stockButton.style.color = 'white';
@@ -65,14 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 stockButton.style.backgroundColor = 'grey';
                                 stockButton.style.color = 'white';
                                 stockButton.disabled = true;
-                                const addToCartButton = document.querySelector(`.add-to-cart[data-product-id="${product.id}"]`);
-                                if (addToCartButton) {
-                                    addToCartButton.style.display = 'none';
-                                }
+                                button.style.display = 'none';
                             }
                         }
-                    });
+                    } else {
+                        alert('המוצר אזל מהמלאי.');
+                    }
                 });
+            });
         })
         .catch(error => console.error('Error loading inventory:', error));
 });
