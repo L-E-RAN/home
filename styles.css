@@ -94,8 +94,8 @@ footer {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 22.5px 45px; /* צמצום ב-50% */
-    font-size: 2.25rem; /* צמצום ב-50% */
+    padding: 11.25px 22.5px; /* צמצום ב-50% */
+    font-size: 1.125rem; /* צמצום ב-50% */
     border-radius: 10px;
     cursor: pointer;
     position: relative;
@@ -106,15 +106,16 @@ footer {
     background-color: #45a049;
 }
 
+/* חיווי כמות בסל */
 .cart-button .cart-quantity {
     background-color: red;
     color: white;
-    font-size: 1.5rem;
+    font-size: 0.75rem; /* צמצום ב-50% */
     border-radius: 50%;
-    padding: 5px 10px;
+    padding: 2.5px 5px; /* צמצום ב-50% */
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -5px;
+    right: -5px;
 }
 
 /* עיצוב טבלה לסל הקניות */
